@@ -52,7 +52,7 @@ MAPS.forEach((map) => {
   opt.value = map;
   opt.textContent = map
     .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase()); // Nice display
+    .replace(/\b\w/g, (c) => c.toUpperCase());
   mapSelect.appendChild(opt);
 });
 
@@ -104,47 +104,75 @@ async function run() {
       section.className = "region";
       section.innerHTML = `<h3>${hero.toUpperCase()} — ${region.toUpperCase()}</h3>`;
       const pre = document.createElement("pre");
-      pre.textContent = "Fetching ranks...\n";
       section.appendChild(pre);
       output.appendChild(section);
 
-      for (const rank of RANKS) {
-        await new Promise((r) => setTimeout(r, 500)); // rate-limit
-
+      if (gamemode === "quickplay") {
+        // Quick Play: no ranks
+        await new Promise((r) => setTimeout(r, 400)); // rate-limit
         const params = new URLSearchParams({
           platform: "pc",
           gamemode,
           region,
-          competitive_division: rank,
         });
-
-        if (selectedMap) {
-          params.append("map", selectedMap);
-        }
+        if (selectedMap) params.append("map", selectedMap);
 
         try {
           const res = await fetch(`${BASE_URL}/heroes/stats?${params}`);
           if (!res.ok) {
-            pre.textContent += `${rank}: API error\n`;
-            continue;
-          }
-
-          const data = await res.json();
-          const heroData = data.find((h) => h.hero === hero);
-
-          if (heroData) {
-            pre.textContent +=
-              `${rank.padEnd(12)} Winrate: ${heroData.winrate.toFixed(2)}% ` +
-              `Pickrate: ${heroData.pickrate.toFixed(2)}%\n`;
+            pre.textContent = `Winrate: API error\nPickrate: API error\n`;
           } else {
-            pre.textContent += `${rank}: No data\n`;
+            const data = await res.json();
+            const heroData = data.find((h) => h.hero === hero);
+            if (heroData) {
+              const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
+              const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
+              pre.textContent = `Winrate: ${win} Pickrate: ${pick}\n`;
+            } else {
+              pre.textContent = `No data\n`;
+            }
           }
         } catch (err) {
-          pre.textContent += `${rank}: API error\n`;
+          pre.textContent = `API error\n`;
         }
-      }
+      } else {
+        // Competitive: show all ranks
+        pre.textContent = "Fetching ranks...\n";
+        for (const rank of RANKS) {
+          await new Promise((r) => setTimeout(r, 400));
+          const params = new URLSearchParams({
+            platform: "pc",
+            gamemode,
+            region,
+            competitive_division: rank,
+          });
+          if (selectedMap) params.append("map", selectedMap);
 
-      pre.textContent = pre.textContent.replace("Fetching ranks...\n", ""); // remove fetching
+          try {
+            const res = await fetch(`${BASE_URL}/heroes/stats?${params}`);
+            if (!res.ok) {
+              pre.textContent += `${rank.padEnd(12)} API error\n`;
+              continue;
+            }
+
+            const data = await res.json();
+            const heroData = data.find((h) => h.hero === hero);
+
+            if (heroData) {
+              const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
+              const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
+              pre.textContent += `${rank.padEnd(
+                12
+              )} Winrate: ${win} Pickrate: ${pick}\n`;
+            } else {
+              pre.textContent += `${rank.padEnd(12)} No data\n`;
+            }
+          } catch (err) {
+            pre.textContent += `${rank.padEnd(12)} API error\n`;
+          }
+        }
+        pre.textContent = pre.textContent.replace("Fetching ranks...\n", ""); // remove placeholder
+      }
     }
   }
 }
