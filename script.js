@@ -7,23 +7,77 @@ const RANKS = [
   "platinum",
   "diamond",
   "master",
-  "grandmaster",
+  "grandmaster/champion",
+];
+
+const MAPS = [
+  "aatlis",
+  "antarctic-peninsula",
+  "anubis",
+  "arena-victoriae",
+  "ayutthaya",
+  "blizzard-world",
+  "busan",
+  "castillo",
+  "circuit-royal",
+  "colosseo",
+  "dorado",
+  "eichenwalde",
+  "esperanca",
+  "havana",
+  "hollywood",
+  "horizon",
+  "ilios",
+  "junkertown",
+  "lijiang-tower",
+  "kanezaka",
+  "kings-row",
+  "midtown",
+  "necropolis",
+  "nepal",
+  "new-junk-city",
+  "new-queen-street",
+  "numbani",
+  "oasis",
+  "paraiso",
+  "rialto",
+  "route-66",
+  "runasapi",
+  "samoa",
+  "shambali-monastery",
+  "suravasa",
 ];
 
 let VALID_HEROES = new Set();
 
-// Load valid heroes once
+// Populate map dropdown
+const mapSelect = document.getElementById("mapSelect");
+MAPS.forEach((m) => {
+  const option = document.createElement("option");
+  option.value = m;
+  option.textContent = m.replace(/-/g, " ");
+  mapSelect.appendChild(option);
+});
+
+// Load valid heroes
 async function loadHeroes() {
-  const res = await fetch(`${BASE_URL}/heroes`);
-  const data = await res.json();
-  data.forEach((h) => VALID_HEROES.add(h.key));
+  try {
+    const res = await fetch(`${BASE_URL}/heroes`);
+    const data = await res.json();
+    data.forEach((h) => VALID_HEROES.add(h.key));
+  } catch (err) {
+    console.error("Failed to load heroes:", err);
+  }
 }
 
 loadHeroes();
 
+// Attach click listener
+document.getElementById("fetchBtn").addEventListener("click", run);
+
 async function run() {
   const output = document.getElementById("output");
-  output.innerHTML = "";
+  output.innerHTML = "<strong>Fetching...</strong>";
 
   const heroInput = document
     .getElementById("heroes")
@@ -34,38 +88,42 @@ async function run() {
 
   const allRegions = document.getElementById("allRegions").checked;
   const regions = allRegions ? ["americas", "europe", "asia"] : ["americas"];
-
   const gamemode = document.getElementById("gamemode").value;
+  const selectedMap = document.getElementById("mapSelect").value;
 
-  // ---------- VALIDATION ----------
+  // Validation
   for (const hero of heroInput) {
     if (!VALID_HEROES.has(hero)) {
       output.innerHTML = `<div class="error">Invalid hero key: ${hero}</div>`;
-      return; // HARD FAIL
+      return;
     }
   }
 
-  // ---------- FETCH ----------
+  output.innerHTML = ""; // clear previous output
+
   for (const hero of heroInput) {
     for (const region of regions) {
       const section = document.createElement("div");
       section.className = "region";
-      section.innerHTML = `<h3>${hero.toUpperCase()} — ${region.toUpperCase()} — ${gamemode}</h3>`;
+      section.innerHTML = `<h3>${hero.toUpperCase()} — ${region.toUpperCase()}</h3>`;
       const pre = document.createElement("pre");
-      pre.textContent = "Fetching...\n";
+      pre.textContent = "Fetching ranks...\n";
       section.appendChild(pre);
       output.appendChild(section);
 
-      // Determine ranks to iterate over
-      const ranksToUse = gamemode === "competitive" ? RANKS : ["all"];
+      for (const rank of RANKS) {
+        await new Promise((r) => setTimeout(r, 500)); // rate-limit
 
-      for (const rank of ranksToUse) {
         const params = new URLSearchParams({
           platform: "pc",
           gamemode,
           region,
-          competitive_division: rank === "all" ? "" : rank,
+          competitive_division: rank,
         });
+
+        if (selectedMap) {
+          params.append("map", selectedMap);
+        }
 
         try {
           const res = await fetch(`${BASE_URL}/heroes/stats?${params}`);
@@ -79,19 +137,17 @@ async function run() {
 
           if (heroData) {
             pre.textContent +=
-              `${rank.padEnd(12)} ` +
-              `Winrate: ${heroData.winrate.toFixed(2)}% ` +
+              `${rank.padEnd(12)} Winrate: ${heroData.winrate.toFixed(2)}% ` +
               `Pickrate: ${heroData.pickrate.toFixed(2)}%\n`;
           } else {
             pre.textContent += `${rank}: No data\n`;
           }
         } catch (err) {
-          pre.textContent += `${rank}: Fetch failed\n`;
+          pre.textContent += `${rank}: API error\n`;
         }
-
-        // Rate limit delay (avoid hitting API too fast)
-        await new Promise((r) => setTimeout(r, 600));
       }
+
+      pre.textContent = pre.textContent.replace("Fetching ranks...\n", ""); // remove fetching
     }
   }
 }
