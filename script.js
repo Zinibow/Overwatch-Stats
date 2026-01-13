@@ -46,13 +46,15 @@ const MAPS = [
 
 let VALID_HEROES = new Set();
 
-// Populate map dropdown
+// Populate map select dropdown
 const mapSelect = document.getElementById("mapSelect");
-MAPS.forEach((m) => {
-  const option = document.createElement("option");
-  option.value = m;
-  option.textContent = m.replace(/-/g, " ");
-  mapSelect.appendChild(option);
+MAPS.forEach((map) => {
+  const opt = document.createElement("option");
+  opt.value = map;
+  opt.textContent = map
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // Nice display
+  mapSelect.appendChild(opt);
 });
 
 // Load valid heroes
