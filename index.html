@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Overwatch Hero Winrates</title>
+    <script defer src="script.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      input,
+      button {
+        padding: 8px;
+        margin: 6px 0;
+        width: 100%;
+      }
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+      .region {
+        margin-top: 20px;
+      }
+      pre {
+        background: #111;
+        color: #0f0;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Overwatch Hero Winrates</h2>
+
+    <label>Hero keys (comma separated)</label>
+    <input id="heroes" placeholder="ana, kiriko, cassidy" />
+
+    <label>
+      <input type="checkbox" id="allRegions" />
+      All regions (Americas, Europe, Asia)
+    </label>
+
+    <button onclick="run()">Fetch Winrates</button>
+
+    <div id="output"></div>
+  </body>
+</html>
