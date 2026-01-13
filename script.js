@@ -7,7 +7,7 @@ const RANKS = [
   "platinum",
   "diamond",
   "master",
-  "grandmaster/champion",
+  "grandmaster",
 ];
 
 const MAPS = [
