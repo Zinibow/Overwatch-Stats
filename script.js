@@ -12,7 +12,7 @@ const RANKS = [
 
 const MAPS = [
   "aatlis",
-  "anubis",
+  "anubis (broken)",
   "blizzard-world",
   "busan",
   "circuit-royal",
@@ -20,6 +20,7 @@ const MAPS = [
   "dorado",
   "eichenwalde",
   "esperanca",
+  "Hanaoka (broken)"
   "havana",
   "hollywood",
   "horizon",
