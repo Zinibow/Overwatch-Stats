@@ -1,1 +1,1 @@
-This program tracks the stats using OverFast API. 
+This program tracks the stats using OverFast API.
