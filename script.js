@@ -12,7 +12,6 @@ const RANKS = [
 
 const MAPS = [
   "aatlis",
-  "antarctic-peninsula",
   "anubis",
   "blizzard-world",
   "busan",
