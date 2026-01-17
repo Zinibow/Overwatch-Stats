@@ -163,7 +163,7 @@ async function run() {
               const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
               const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
               pre.textContent += `${rank.padEnd(
-                12
+                12,
               )} Winrate: ${win} Pickrate: ${pick}\n`;
             } else {
               pre.textContent += `${rank.padEnd(12)} No data\n`;
@@ -177,3 +177,21 @@ async function run() {
     }
   }
 }
+// ---------- Theme toggle ----------
+const toggle = document.getElementById("themeToggle");
+const label = document.getElementById("themeLabel");
+
+// load saved theme
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  document.body.classList.add("dark");
+  toggle.checked = true;
+  label.textContent = "Dark";
+}
+
+toggle.addEventListener("change", () => {
+  const dark = toggle.checked;
+  document.body.classList.toggle("dark", dark);
+  label.textContent = dark ? "Dark" : "Light";
+  localStorage.setItem("theme", dark ? "dark" : "light");
+});

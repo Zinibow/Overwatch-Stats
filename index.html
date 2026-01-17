@@ -8,6 +8,10 @@
     <!-- Link JS -->
     <script defer src="script.js"></script>
   </head>
+  <p class="hint">
+    If you get an <strong>api error</strong>, try <kbd>Ctrl</kbd> +
+    <kbd>Shift</kbd> + <kbd>Delete</kbd> to hard refresh.
+  </p>
   <body>
     <h2>Overwatch Hero Winrates</h2>
 
@@ -39,9 +43,12 @@
 
     <!-- Output area -->
     <div id="output"></div>
+    <div class="theme-switch">
+      <label class="switch">
+        <input type="checkbox" id="themeToggle" />
+        <span class="slider"></span>
+      </label>
+      <div id="themeLabel" class="theme-label">Light</div>
+    </div>
   </body>
-  <p class="hint">
-    If you get an <strong>api error</strong>, try <kbd>Ctrl</kbd> +
-    <kbd>Shift</kbd> + <kbd>Delete</kbd> to hard refresh.
-  </p>
 </html>

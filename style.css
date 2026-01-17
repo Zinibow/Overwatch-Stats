@@ -1,10 +1,37 @@
+:root {
+  --bg: #f0f0f0;
+  --text: #000;
+  --panel: #222;
+  --pre-bg: #111;
+  --pre-text: #0f0;
+  --button: #0078d7;
+  --button-hover: #005a9e;
+  --hint: #555;
+  --slider-off: #ccc;
+}
+
+body.dark {
+  --bg: #1f1f1f; /* soft dark background */
+  --text: #e0e0e0; /* light gray text */
+  --panel: #2c2c2c; /* panel background */
+  --pre-bg: #2a2a2a; /* preformatted text background */
+  --pre-text: #7fff7f; /* readable green text */
+  --button: #4a90e2; /* soft blue button */
+  --button-hover: #357abd;
+  --hint: #ccc; /* lighter hint text */
+  --slider-off: #888;
+  --kbd-bg: #444; /* background for kbd in dark mode */
+  --kbd-text: #fff; /* text for kbd in dark mode */
+}
+
 /* General body styling */
 body {
   font-family: sans-serif;
   padding: 20px;
   max-width: 600px;
   margin: auto;
-  background-color: #f0f0f0;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 /* Full-width input fields */
@@ -17,6 +44,8 @@ select.full-width {
   border-radius: 6px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
 /* Buttons */
@@ -26,7 +55,7 @@ button {
   margin: 10px auto;
   font-size: 1.1em;
   font-weight: bold;
-  background-color: #0078d7;
+  background-color: var(--button);
   color: white;
   border: none;
   border-radius: 6px;
@@ -37,7 +66,7 @@ button {
 }
 
 button:hover {
-  background-color: #005a9e;
+  background-color: var(--button-hover);
 }
 
 /* Checkbox labels */
@@ -62,7 +91,7 @@ label.checkbox-label input[type="checkbox"] {
 /* Region / Hero sections */
 .region {
   margin-top: 20px;
-  background-color: #222;
+  background-color: var(--panel);
   padding: 10px;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -70,8 +99,8 @@ label.checkbox-label input[type="checkbox"] {
 
 /* Preformatted output */
 pre {
-  background: #111;
-  color: #0f0;
+  background: var(--pre-bg);
+  color: var(--pre-text);
   padding: 10px;
   overflow-x: auto;
   border-radius: 4px;
@@ -89,18 +118,83 @@ h3 {
   margin-top: 0;
   font-size: 1.1em;
 }
+
 /* API Error Hint */
 .hint {
   margin-top: 20px;
   text-align: center;
   font-size: 0.9em;
-  color: #555;
+  color: var(--hint);
 }
 
 .hint kbd {
-  background: #eee;
+  background: var(--kbd-bg, #eee);
+  color: var(--kbd-text, #000);
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 2px 6px;
   font-family: monospace;
+}
+
+/* Theme switch container */
+.theme-switch {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--text);
+  user-select: none;
+}
+
+/* Switch base */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+/* Hide checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Slider track */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--slider-off);
+  border-radius: 24px;
+  transition: background-color 0.25s;
+}
+
+/* Slider knob */
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.25s;
+}
+
+/* Checked (dark mode) */
+input:checked + .slider {
+  background-color: var(--button);
+}
+
+input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+/* Label below slider */
+.theme-label {
+  margin-top: 4px;
 }
