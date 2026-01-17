@@ -3,7 +3,7 @@
   --text: #000;
   --panel: #e8e8e8;
   --pre-bg: #f5f5f5;
-  --pre-text: #006400;
+  --pre-text: #006400; /* green text in light mode */
   --button: #0078d7;
   --button-hover: #005a9e;
   --hint: #555;
@@ -13,20 +13,19 @@
 }
 
 body.dark {
-  --bg: #1f1f1f; /* soft dark background */
-  --text: #e0e0e0; /* light gray text */
-  --panel: #2c2c2c; /* panel background */
-  --pre-bg: #2a2a2a; /* preformatted text background */
-  --pre-text: #7fff7f; /* readable green text */
-  --button: #4a90e2; /* soft blue button */
+  --bg: #1f1f1f;
+  --text: #e0e0e0;
+  --panel: #2c2c2c;
+  --pre-bg: #2a2a2a;
+  --pre-text: #7fff7f; /* green text in dark mode */
+  --button: #4a90e2;
   --button-hover: #357abd;
-  --hint: #ccc; /* lighter hint text */
+  --hint: #ccc;
   --slider-off: #888;
-  --kbd-bg: #444; /* kbd background in dark mode */
-  --kbd-text: #fff; /* kbd text in dark mode */
+  --kbd-bg: #444;
+  --kbd-text: #fff;
 }
 
-/* General styling */
 body {
   font-family: sans-serif;
   padding: 20px;
@@ -36,7 +35,6 @@ body {
   color: var(--text);
 }
 
-/* Full-width input fields */
 input.full-width,
 select.full-width {
   width: 100%;
@@ -50,7 +48,6 @@ select.full-width {
   color: var(--text);
 }
 
-/* Buttons */
 button {
   display: block;
   padding: 12px 24px;
@@ -71,7 +68,6 @@ button:hover {
   background-color: var(--button-hover);
 }
 
-/* Checkbox labels */
 label.checkbox-label {
   display: flex;
   align-items: center;
@@ -83,14 +79,12 @@ label.checkbox-label input[type="checkbox"] {
   margin-right: 8px;
 }
 
-/* Error messages */
 .error {
   color: red;
   font-weight: bold;
   margin-top: 8px;
 }
 
-/* Region / Hero sections */
 .region {
   margin-top: 20px;
   background-color: var(--panel);
@@ -100,30 +94,28 @@ label.checkbox-label input[type="checkbox"] {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Preformatted output */
-pre {
-  background-color: var(--pre-bg);
-  color: var(--pre-text);
-  padding: 10px;
-  overflow-x: auto;
-  border-radius: 4px;
-  font-family: monospace;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+.region h3 {
+  text-align: center; /* hero/region centered */
+  margin-top: 0;
+  font-size: 1.1em;
 }
 
-/* Headings */
+pre {
+  background-color: var(--pre-bg);
+  color: var(--pre-text); /* green text */
+  padding: 12px;
+  overflow-x: auto;
+  border-radius: 6px;
+  white-space: pre;
+  text-align: left;
+  font-family: monospace;
+}
+
 h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-h3 {
-  margin-top: 0;
-  font-size: 1.1em;
-}
-
-/* API Error Hint */
 .hint {
   margin-top: 20px;
   text-align: center;
@@ -140,7 +132,6 @@ h3 {
   font-family: monospace;
 }
 
-/* Theme switch container */
 .theme-switch {
   position: fixed;
   top: 12px;
@@ -197,15 +188,16 @@ input:checked + .slider::before {
   margin-top: 4px;
 }
 
-/* Scrollbars for dark mode */
 body.dark pre::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 body.dark pre::-webkit-scrollbar-thumb {
   background-color: #555;
   border-radius: 4px;
 }
+
 body.dark pre::-webkit-scrollbar-track {
   background-color: #2a2a2a;
 }

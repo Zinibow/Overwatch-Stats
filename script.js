@@ -10,9 +10,12 @@ const RANKS = [
   "grandmaster",
 ];
 
+// Maps broken in API
+const BROKEN_MAPS = new Set(["anubis", "hanaoka"]);
+
 const MAPS = [
   "aatlis",
-  "anubis", // broken
+  "anubis",
   "blizzard-world",
   "busan",
   "circuit-royal",
@@ -20,7 +23,7 @@ const MAPS = [
   "dorado",
   "eichenwalde",
   "esperanca",
-  "hanaoka", //broken
+  "hanaoka",
   "havana",
   "hollywood",
   "horizon",
@@ -46,7 +49,7 @@ const MAPS = [
 
 let VALID_HEROES = new Set();
 
-// Populate map select dropdown
+// Populate map dropdown
 const mapSelect = document.getElementById("mapSelect");
 MAPS.forEach((map) => {
   const opt = document.createElement("option");
@@ -54,6 +57,10 @@ MAPS.forEach((map) => {
   opt.textContent = map
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+  if (BROKEN_MAPS.has(map)) {
+    opt.textContent += " ⚠";
+    opt.disabled = true;
+  }
   mapSelect.appendChild(opt);
 });
 
@@ -67,10 +74,21 @@ async function loadHeroes() {
     console.error("Failed to load heroes:", err);
   }
 }
-
 loadHeroes();
 
-// Attach click listener
+// Apply theme to dynamic elements
+function refreshDynamicTheme() {
+  document.querySelectorAll(".region").forEach((el) => {
+    el.style.backgroundColor = "var(--panel)";
+    el.style.color = "var(--text)";
+  });
+  document.querySelectorAll("pre").forEach((el) => {
+    el.style.backgroundColor = "var(--pre-bg)";
+    el.style.color = "var(--pre-text)"; // green text
+  });
+}
+
+// Fetch button
 document.getElementById("fetchBtn").addEventListener("click", run);
 
 async function run() {
@@ -87,9 +105,8 @@ async function run() {
   const allRegions = document.getElementById("allRegions").checked;
   const regions = allRegions ? ["americas", "europe", "asia"] : ["americas"];
   const gamemode = document.getElementById("gamemode").value;
-  const selectedMap = document.getElementById("mapSelect").value;
+  const selectedMap = mapSelect.value;
 
-  // Validation
   for (const hero of heroInput) {
     if (!VALID_HEROES.has(hero)) {
       output.innerHTML = `<div class="error">Invalid hero key: ${hero}</div>`;
@@ -97,7 +114,7 @@ async function run() {
     }
   }
 
-  output.innerHTML = ""; // clear previous output
+  output.innerHTML = "";
 
   for (const hero of heroInput) {
     for (const region of regions) {
@@ -108,9 +125,15 @@ async function run() {
       section.appendChild(pre);
       output.appendChild(section);
 
+      refreshDynamicTheme();
+
+      if (selectedMap && BROKEN_MAPS.has(selectedMap)) {
+        pre.textContent = "No data available for this map";
+        continue;
+      }
+
       if (gamemode === "quickplay") {
-        // Quick Play: no ranks
-        await new Promise((r) => setTimeout(r, 400)); // rate-limit
+        await new Promise((r) => setTimeout(r, 400));
         const params = new URLSearchParams({
           platform: "pc",
           gamemode,
@@ -121,24 +144,27 @@ async function run() {
         try {
           const res = await fetch(`${BASE_URL}/heroes/stats?${params}`);
           if (!res.ok) {
-            pre.textContent = `Winrate: API error\nPickrate: API error\n`;
-          } else {
-            const data = await res.json();
-            const heroData = data.find((h) => h.hero === hero);
-            if (heroData) {
-              const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
-              const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
-              pre.textContent = `Winrate: ${win} Pickrate: ${pick}\n`;
-            } else {
-              pre.textContent = `No data\n`;
-            }
+            pre.textContent =
+              res.status === 404
+                ? "No stats available for this map"
+                : `API error: ${res.status}`;
+            continue;
           }
-        } catch (err) {
-          pre.textContent = `API error\n`;
+          const data = await res.json();
+          const heroData = data.find((h) => h.hero === hero);
+          if (heroData) {
+            const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
+            const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
+            pre.textContent = `Winrate: ${win} Pickrate: ${pick}\n`;
+          } else {
+            pre.textContent = "No stats available";
+          }
+        } catch {
+          pre.textContent = "API error (network issue)";
         }
       } else {
-        // Competitive: show all ranks
-        pre.textContent = "Fetching ranks...\n";
+        // Competitive mode
+        pre.textContent = "";
         for (const rank of RANKS) {
           await new Promise((r) => setTimeout(r, 400));
           const params = new URLSearchParams({
@@ -147,7 +173,6 @@ async function run() {
             region,
             competitive_division: rank,
           });
-          if (selectedMap) params.append("map", selectedMap);
 
           try {
             const res = await fetch(`${BASE_URL}/heroes/stats?${params}`);
@@ -155,33 +180,28 @@ async function run() {
               pre.textContent += `${rank.padEnd(12)} API error\n`;
               continue;
             }
-
             const data = await res.json();
             const heroData = data.find((h) => h.hero === hero);
-
             if (heroData) {
               const win = `${heroData.winrate.toFixed(2)}%`.padEnd(12);
               const pick = `${heroData.pickrate.toFixed(2)}%`.padEnd(12);
-              pre.textContent += `${rank.padEnd(
-                12,
-              )} Winrate: ${win} Pickrate: ${pick}\n`;
+              pre.textContent += `${rank.padEnd(12)} Winrate: ${win} Pickrate: ${pick}\n`;
             } else {
               pre.textContent += `${rank.padEnd(12)} No data\n`;
             }
-          } catch (err) {
-            pre.textContent += `${rank.padEnd(12)} API error\n`;
+          } catch {
+            pre.textContent += `${rank.padEnd(12)} Network error\n`;
           }
         }
-        pre.textContent = pre.textContent.replace("Fetching ranks...\n", ""); // remove placeholder
       }
     }
   }
 }
-// ---------- Theme toggle ----------
+
+// Theme toggle
 const toggle = document.getElementById("themeToggle");
 const label = document.getElementById("themeLabel");
 
-// load saved theme
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "dark") {
   document.body.classList.add("dark");
@@ -194,4 +214,5 @@ toggle.addEventListener("change", () => {
   document.body.classList.toggle("dark", dark);
   label.textContent = dark ? "Dark" : "Light";
   localStorage.setItem("theme", dark ? "dark" : "light");
+  refreshDynamicTheme();
 });
