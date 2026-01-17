@@ -1,13 +1,15 @@
 :root {
   --bg: #f0f0f0;
   --text: #000;
-  --panel: #222;
-  --pre-bg: #111;
-  --pre-text: #0f0;
+  --panel: #e8e8e8;
+  --pre-bg: #f5f5f5;
+  --pre-text: #006400;
   --button: #0078d7;
   --button-hover: #005a9e;
   --hint: #555;
   --slider-off: #ccc;
+  --kbd-bg: #eee;
+  --kbd-text: #000;
 }
 
 body.dark {
@@ -20,11 +22,11 @@ body.dark {
   --button-hover: #357abd;
   --hint: #ccc; /* lighter hint text */
   --slider-off: #888;
-  --kbd-bg: #444; /* background for kbd in dark mode */
-  --kbd-text: #fff; /* text for kbd in dark mode */
+  --kbd-bg: #444; /* kbd background in dark mode */
+  --kbd-text: #fff; /* kbd text in dark mode */
 }
 
-/* General body styling */
+/* General styling */
 body {
   font-family: sans-serif;
   padding: 20px;
@@ -92,14 +94,15 @@ label.checkbox-label input[type="checkbox"] {
 .region {
   margin-top: 20px;
   background-color: var(--panel);
+  color: var(--text);
   padding: 10px;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Preformatted output */
 pre {
-  background: var(--pre-bg);
+  background-color: var(--pre-bg);
   color: var(--pre-text);
   padding: 10px;
   overflow-x: auto;
@@ -114,6 +117,7 @@ h2 {
   text-align: center;
   margin-bottom: 20px;
 }
+
 h3 {
   margin-top: 0;
   font-size: 1.1em;
@@ -128,8 +132,8 @@ h3 {
 }
 
 .hint kbd {
-  background: var(--kbd-bg, #eee);
-  color: var(--kbd-text, #000);
+  background: var(--kbd-bg);
+  color: var(--kbd-text);
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 2px 6px;
@@ -147,7 +151,6 @@ h3 {
   user-select: none;
 }
 
-/* Switch base */
 .switch {
   position: relative;
   display: inline-block;
@@ -155,14 +158,12 @@ h3 {
   height: 24px;
 }
 
-/* Hide checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* Slider track */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -172,7 +173,6 @@ h3 {
   transition: background-color 0.25s;
 }
 
-/* Slider knob */
 .slider::before {
   position: absolute;
   content: "";
@@ -185,7 +185,6 @@ h3 {
   transition: transform 0.25s;
 }
 
-/* Checked (dark mode) */
 input:checked + .slider {
   background-color: var(--button);
 }
@@ -194,7 +193,19 @@ input:checked + .slider::before {
   transform: translateX(22px);
 }
 
-/* Label below slider */
 .theme-label {
   margin-top: 4px;
+}
+
+/* Scrollbars for dark mode */
+body.dark pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body.dark pre::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+body.dark pre::-webkit-scrollbar-track {
+  background-color: #2a2a2a;
 }
